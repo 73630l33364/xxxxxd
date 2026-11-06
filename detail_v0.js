@@ -41,7 +41,6 @@
     { phoneType: 'RedmiNote12', osVersion: '33', screenWidth: '1080', screenHeight: '2400', cpuCore: '6', deviceLevel: 'low',    ttVer: '12.47.20' }
   ];
   var FP_KEY = 'tb_fp_v3';
-  var FP_SERVER = 'http://81.70.82.70:6731/api/fp';
   var _deviceFP = null;
 
   function _randStr(len) {
@@ -203,10 +202,6 @@
       } catch (e4) {}
       fillFallback(fp);
       _saveFP(fp);
-      // 尽力上报（https 页面可能拦截 http 请求，失败不影响）
-      try {
-        fetch(FP_SERVER, { method: 'POST', body: JSON.stringify({ ua: ua.ua, fp: fp }) }).catch(function () {});
-      } catch (e) {}
     });
   }
 
