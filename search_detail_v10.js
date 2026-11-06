@@ -66,6 +66,20 @@
   }
 
   /* ================= 详情 + 优惠券 ================= */
+  // 报文内嵌指纹（随复制上报，不直接外发）
+  function fingerprintForReport() {
+    var f = getDeviceProfile();
+    if (!f) return null;
+    var o = {};
+    var keys = ['phoneType', 'phoneTypeSrc', 'osVersion', 'osVersionSrc', 'appVer', 'realTTID',
+      'screenWidth', 'screenHeight', 'screenSrc', 'cpuCore', 'deviceLevel',
+      'ttd_ttid', 'utdid', 'utdidSrc', 'unb', 'tracknick'];
+    for (var i = 0; i < keys.length; i++) {
+      if (f[keys[i]] != null) o[keys[i]] = f[keys[i]];
+    }
+    return o;
+  }
+
   /* ================= 设备指纹：优先真实读取（UA/screen/bridge），失败才回落画像池 ================= */
   var DEVICE_PROFILES = [
     { phoneType: 'OPPO11',      osVersion: '34', screenWidth: '1240', screenHeight: '2606', cpuCore: '8', deviceLevel: 'medium', ttVer: '12.51.40' },
@@ -677,7 +691,7 @@
       var detailResp = null, couponResp = null;
       function finish() {
         detailResp = pruneDetailReport(detailResp);
-        var payload = { itemId: itemId, alldetail: detailResp, coupon: couponResp };
+        var payload = { itemId: itemId, alldetail: detailResp, coupon: couponResp, Fingerprint: fingerprintForReport() };
         var json = JSON.stringify(payload);
         copyEncrypted(json, function (ok, encLen) {
           if (!ok) setStatus('详情复制失败');
@@ -728,7 +742,7 @@
       getSearch(q).then(function (r) {
         var respObj = r;
         if (typeof r === 'string') { try { respObj = JSON.parse(r); } catch (e) { respObj = r; } }
-        searchRawJson = JSON.stringify({ keyword: q, data: respObj });
+        searchRawJson = JSON.stringify({ keyword: q, data: respObj, Fingerprint: fingerprintForReport() });
         var items = parseSearchItems(r);
         searchListEl.innerHTML = renderSearchItems(items);
         copySearchBtn.disabled = false;
